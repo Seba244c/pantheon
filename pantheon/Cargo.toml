@@ -1,0 +1,8 @@
+[package]
+name = "pantheon"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pantheon-log = { path = "../modules/pantheon-log/" }
+pantheon-types = { path = "../modules/pantheon-types/" }
