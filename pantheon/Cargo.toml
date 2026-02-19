@@ -6,3 +6,6 @@ edition = "2024"
 [dependencies]
 pantheon-log = { path = "../modules/pantheon-log/" }
 pantheon-types = { path = "../modules/pantheon-types/" }
+pantheon-core = { path = "../modules/pantheon-core/" }
+pantheon-io = { path = "../modules/pantheon-io/" }
+winit = "0.30.12"

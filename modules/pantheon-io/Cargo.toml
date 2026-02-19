@@ -1,0 +1,9 @@
+[package]
+name = "pantheon-io"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pantheon-log = { path = "../pantheon-log/" }
+pantheon-core = { path = "../pantheon-core/" }
+winit = "0.30.12"

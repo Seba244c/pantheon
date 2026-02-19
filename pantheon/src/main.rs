@@ -1,14 +1,41 @@
-use pantheon_log::{error, fatal, info, trace, warn};
-use pantheon_types::{color::colors, Vec2f};
+use std::thread;
+use pantheon_io::{IOError, IOEvent};
+use pantheon_log::trace;
+use pantheon_core::PantheonEvent;
 
-pub fn main () {
-    let vec = Vec2f::new(2.0, 3.0);
-    let color = colors::BABY_PINK;
-    trace!("Vector {vec} has length {}", vec.length());
-    trace!("My favorite color is {color}");
-    trace!("This is the program running..");
-    info!("I have to inform you.");
-    warn!("A warning, an error might occur!");
-    error!("An error did occur!!");
-    fatal!("Yup, that was fatal.");
+#[derive(Debug)]
+pub enum PantheonError {
+    DuplicateApplicationNotAllowed,
+    IOError(String)
+}
+
+pub fn run() -> Result<(), PantheonError> {
+    // Create AppIO rx and tx, so we can communicate between the main / render thread, and the
+    // engine thread
+    let (mut appio, rx_io, tx_pe) = pantheon_io::create().unwrap();
+
+    // Spawn the engine thread, which gets the IOEvent rx, and the PantheonEvent tx
+    thread::spawn(move || {
+        loop {
+            let io_event = rx_io.recv().unwrap();
+            trace!("Recieved IO event");
+            match io_event {
+                IOEvent::CloseRequested => {
+                    let _ = tx_pe.send(PantheonEvent::Shutdown);
+                    break;
+                }
+            }
+        }
+    });
+
+    // Now we hand over control of the main thread to AppIO (winit::EventLoop)
+    match appio.start() {
+        Ok(..) => Ok(()),
+        Err(IOError::DuplicateApplicationNotAllowed) => Err(PantheonError::DuplicateApplicationNotAllowed),
+        Err(IOError::EventLoopError(err)) => Err(PantheonError::IOError(err))
+    }
+}
+
+pub fn main () -> Result<(), PantheonError> {
+    run()
 }
