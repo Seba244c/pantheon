@@ -1,7 +1,7 @@
-use std::thread;
-use pantheon_io::{IOError, IOEvent};
-use pantheon_log::trace;
-use pantheon_core::PantheonEvent;
+use std::thread::{self, JoinHandle};
+use pantheon_io::{AppIO, IOError, IOEvent};
+use pantheon_core::{AppConfig, PantheonEvent};
+use pantheon_log::{info, trace};
 
 #[derive(Debug)]
 pub enum PantheonError {
@@ -9,33 +9,53 @@ pub enum PantheonError {
     IOError(String)
 }
 
-pub fn run() -> Result<(), PantheonError> {
-    // Create AppIO rx and tx, so we can communicate between the main / render thread, and the
-    // engine thread
-    let (mut appio, rx_io, tx_pe) = pantheon_io::create().unwrap();
+pub struct Pantheon {
+    app_config: AppConfig,
+    app_io: AppIO,
+    engine_thread: JoinHandle<()>
+}
 
-    // Spawn the engine thread, which gets the IOEvent rx, and the PantheonEvent tx
-    thread::spawn(move || {
-        loop {
-            let io_event = rx_io.recv().unwrap();
-            trace!("Recieved IO event");
-            match io_event {
-                IOEvent::CloseRequested => {
-                    let _ = tx_pe.send(PantheonEvent::Shutdown);
-                    break;
+impl Pantheon {
+    pub fn new(app_config: AppConfig) -> Self {
+        info!("Pantheon Version: {}", pantheon_core::VERSION);
+        // Create AppIO rx and tx, so we can communicate between the main / render thread, and the
+        // engine thread
+        trace!("Creating AppIO");
+        let (appio, rx_io, tx_pe) = pantheon_io::create().unwrap();
+        
+        // Spawn the engine thread, which gets the IOEvent rx, and the PantheonEvent tx
+        trace!("Spawning engine thread...");
+        let join_handle = thread::spawn(move || {
+            loop {
+                let io_event = rx_io.recv().unwrap();
+                match io_event {
+                    IOEvent::IOStarted => trace!("Window was created, and the engine thread has started"),
+                    IOEvent::CloseRequested => {
+                        let _ = tx_pe.send(PantheonEvent::Shutdown);
+                        break;
+                    },
+                    _ => ()
                 }
             }
-        }
-    });
+        });
 
-    // Now we hand over control of the main thread to AppIO (winit::EventLoop)
-    match appio.start() {
-        Ok(..) => Ok(()),
-        Err(IOError::DuplicateApplicationNotAllowed) => Err(PantheonError::DuplicateApplicationNotAllowed),
-        Err(IOError::EventLoopError(err)) => Err(PantheonError::IOError(err))
+        Self { app_config, app_io: appio, engine_thread: join_handle }
+    }
+
+    pub fn run(&mut self) -> Result<(), PantheonError> {
+        info!("Starting app: {}", self.app_config.name);
+        info!(" By: {}", self.app_config.author);
+        info!(" Version: {}", self.app_config.version);
+
+        // Now we hand over control of the main thread to AppIO (winit::EventLoop)
+        match self.app_io.start() {
+            Ok(..) => Ok(()),
+            Err(IOError::DuplicateApplicationNotAllowed) => Err(PantheonError::DuplicateApplicationNotAllowed),
+            Err(IOError::EventLoopError(err)) => Err(PantheonError::IOError(err))
+        }
     }
 }
 
 pub fn main () -> Result<(), PantheonError> {
-    run()
+    Pantheon::new(AppConfig::new().name("Sandbox").author("ssnoer").version(pantheon_core::VERSION)).run()
 }

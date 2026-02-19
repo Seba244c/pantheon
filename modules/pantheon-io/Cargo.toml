@@ -1,9 +1,11 @@
 [package]
 name = "pantheon-io"
-version = "0.1.0"
 edition = "2024"
+version.workspace = true
+authors.workspace = true
 
 [dependencies]
 pantheon-log = { path = "../pantheon-log/" }
 pantheon-core = { path = "../pantheon-core/" }
+pantheon-types = { path = "../pantheon-types/" }
 winit = "0.30.12"

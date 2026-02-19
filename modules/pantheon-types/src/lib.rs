@@ -34,21 +34,27 @@ impl<T: std::ops::Sub<Output = T>> std::ops::Sub for Vec2<T> {
     }
 }
 
-impl<T: std::ops::Mul<Output = T>> std::ops::Mul for Vec2<T> {
+impl<T> std::ops::Mul<T> for Vec2<T>
+    where T: Copy + std::ops::Mul<Output = T>
+{
     type Output = Self;
 
-    fn mul(self, other: Self) -> Self {
-        Self {x: self.x * other.x, y: self.y * other.y}
+    fn mul(self, rhs: T) -> Self {
+        Self { x: self.x * rhs, y: self.y * rhs }
     }
 }
 
-impl<T: std::ops::Div<Output = T>> std::ops::Div for Vec2<T> {
+impl<T> std::ops::Div<T> for Vec2<T>
+    where T: Copy + std::ops::Div<Output = T>
+{
     type Output = Self;
 
-    fn div(self, other: Self) -> Self {
-        Self {x: self.x / other.x, y: self.y / other.y}
+    fn div(self, rhs: T) -> Self {
+        Self { x: self.x / rhs, y: self.y / rhs }
     }
 }
+
+
 
 impl Vec2<f32> {
     pub fn length(self: Self) -> f32 {
@@ -76,39 +82,29 @@ mod test {
     }
 
     #[test]
-    fn vec2_add() {
+    fn vec2_addsub() {
         let vec1 = Vec2f::new(3.0, -3.0);
         let vec2 = Vec2f::new(1.0, 1.0);
         let vec = vec1 + vec2;
         assert_eq!(vec.x, 4.0);
         assert_eq!(vec.y, -2.0);
-    }
-    
-    #[test]
-    fn vec2_sub() {
+        
         let vec1 = Vec2f::new(3.0, -3.0);
         let vec2 = Vec2f::new(1.0, 1.0);
         let vec = vec1 - vec2;
         assert_eq!(vec.x, 2.0);
         assert_eq!(vec.y, -4.0);
     }
-
-    #[test]
-    fn vec2_mul() {
-        let vec1 = Vec2f::new(3.0, -3.0);
-        let vec2 = Vec2f::new(2.0, 2.0);
-        let vec = vec1 * vec2;
-        assert_eq!(vec.x, 6.0);
-        assert_eq!(vec.y, -6.0);
-    }
     
     #[test]
-    fn vec2_div() {
-        let vec1 = Vec2f::new(3.0, -3.0);
-        let vec2 = Vec2f::new(2.0, 2.0);
-        let vec = vec1 / vec2;
-        assert_eq!(vec.x, 1.5);
-        assert_eq!(vec.y, -1.5);
+    fn vec2_scalar() {
+        let vec = Vec2f::new(3.0, -3.0);
+        let vec = vec * 2.0;
+        assert_eq!(vec.x, 6.0);
+        assert_eq!(vec.y, -6.0);
+        let vec = vec / 2.0;
+        assert_eq!(vec.x, 3.0);
+        assert_eq!(vec.y, -3.0);
     }
     
     #[test]
