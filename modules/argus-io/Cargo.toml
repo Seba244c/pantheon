@@ -1,11 +1,10 @@
 [package]
-name = "pantheon-io"
+name = "argus-io"
 edition = "2024"
 version.workspace = true
 authors.workspace = true
 
 [dependencies]
-pantheon-log = { path = "../pantheon-log/" }
+hermes-log = { path = "../hermes-log/" }
 pantheon-core = { path = "../pantheon-core/" }
-pantheon-types = { path = "../pantheon-types/" }
 winit = "0.30.12"

@@ -4,7 +4,7 @@ pub enum LogLevel {
     Trace, Info, Warn, Error, Fatal,
 }
 
-pub fn logs(message: fmt::Arguments<'_>, level: LogLevel, file: &'static str, line: u32) {
+pub fn log(message: fmt::Arguments<'_>, level: LogLevel, file: &'static str, line: u32) {
     let level_str;
     match level {
         LogLevel::Trace => {
@@ -32,34 +32,34 @@ pub fn logs(message: fmt::Arguments<'_>, level: LogLevel, file: &'static str, li
 #[macro_export]
 macro_rules! trace {
     ($($arg:tt)*) => {{
-        $crate::logs(format_args!($($arg)*), $crate::LogLevel::Trace, file!(), line!());
+        $crate::log(format_args!($($arg)*), $crate::LogLevel::Trace, file!(), line!());
     }};
 }
 
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {{
-        $crate::logs(format_args!($($arg)*), $crate::LogLevel::Info, file!(), line!());
+        $crate::log(format_args!($($arg)*), $crate::LogLevel::Info, file!(), line!());
     }};
 }
 
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {{
-        $crate::logs(format_args!($($arg)*), $crate::LogLevel::Warn, file!(), line!());
+        $crate::log(format_args!($($arg)*), $crate::LogLevel::Warn, file!(), line!());
     }};
 }
 
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => {{
-        $crate::logs(format_args!($($arg)*), $crate::LogLevel::Error, file!(), line!());
+        $crate::log(format_args!($($arg)*), $crate::LogLevel::Error, file!(), line!());
     }};
 }
 
 #[macro_export]
 macro_rules! fatal {
     ($($arg:tt)*) => {{
-        $crate::logs(format_args!($($arg)*), $crate::LogLevel::Fatal, file!(), line!());
+        $crate::log(format_args!($($arg)*), $crate::LogLevel::Fatal, file!(), line!());
     }};
 }

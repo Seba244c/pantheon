@@ -1,15 +1,17 @@
 use std::sync::mpsc::{self, Receiver, Sender};
 
 use pantheon_core::PantheonEvent;
-use pantheon_log::{fatal, trace};
-use pantheon_types::Vec2f;
-use winit::{application::ApplicationHandler, error::EventLoopError, event::WindowEvent, event_loop::{ActiveEventLoop, ControlFlow, EventLoop}, window::Window};
+use hermes_log::{fatal, trace};
+use pantheon_core::types::vec::Vec2f;
+use winit::{application::ApplicationHandler, error::EventLoopError, event::WindowEvent, event_loop::{ActiveEventLoop, ControlFlow, EventLoop}, keyboard::PhysicalKey, window::Window};
 
 pub enum IOEvent {
     IOStarted,
     CloseRequested,
     NewPhysicalSize(Vec2f),
-    NewLogicalSize(Vec2f)
+    NewLogicalSize(Vec2f),
+    KeyPressed(PhysicalKey),
+    KeyReleased(PhysicalKey),
 }
 
 #[derive(Debug)]
@@ -98,6 +100,14 @@ impl ApplicationHandler for AppIO {
                             event_loop.exit();
                         }
                     }
+                }
+            },
+            WindowEvent::KeyboardInput { device_id: _, event, is_synthetic: _ } => {
+                match event.state {
+                    winit::event::ElementState::Pressed => 
+                        self.send(event_loop, IOEvent::KeyPressed(event.physical_key)),
+                    winit::event::ElementState::Released => 
+                        self.send(event_loop, IOEvent::KeyReleased(event.physical_key)),
                 }
             }
             WindowEvent::Resized(size) => {

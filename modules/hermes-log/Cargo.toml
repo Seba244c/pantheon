@@ -1,5 +1,8 @@
 [package]
-name = "pantheon-core"
+name = "hermes-log"
 edition = "2024"
 version.workspace = true
 authors.workspace = true
+
+[dependencies]
+chrono = "0.4.43"

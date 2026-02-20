@@ -1,3 +1,5 @@
+pub mod types;
+
 pub enum PantheonEvent {
     Shutdown
 }

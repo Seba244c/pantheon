@@ -1,7 +1,8 @@
 use std::thread::{self, JoinHandle};
-use pantheon_io::{AppIO, IOError, IOEvent};
+use argus_io::{AppIO, IOError, IOEvent};
 use pantheon_core::{AppConfig, PantheonEvent};
-use pantheon_log::{info, trace};
+use hermes_log::{info, trace};
+use winit::keyboard::KeyCode;
 
 #[derive(Debug)]
 pub enum PantheonError {
@@ -12,7 +13,13 @@ pub enum PantheonError {
 pub struct Pantheon {
     app_config: AppConfig,
     app_io: AppIO,
-    engine_thread: JoinHandle<()>
+    engine_thread: JoinHandle<()>,
+}
+
+pub trait Application {
+    fn on_start(&self) {
+
+    }
 }
 
 impl Pantheon {
@@ -21,7 +28,7 @@ impl Pantheon {
         // Create AppIO rx and tx, so we can communicate between the main / render thread, and the
         // engine thread
         trace!("Creating AppIO");
-        let (appio, rx_io, tx_pe) = pantheon_io::create().unwrap();
+        let (appio, rx_io, tx_pe) = argus_io::create().unwrap();
         
         // Spawn the engine thread, which gets the IOEvent rx, and the PantheonEvent tx
         trace!("Spawning engine thread...");
@@ -34,6 +41,12 @@ impl Pantheon {
                         let _ = tx_pe.send(PantheonEvent::Shutdown);
                         break;
                     },
+                    IOEvent::KeyPressed(key) => {
+                        if key == KeyCode::KeyW {
+                            let _ = tx_pe.send(PantheonEvent::Shutdown);
+                            break;
+                        }
+                    }
                     _ => ()
                 }
             }

@@ -5,8 +5,7 @@ version.workspace = true
 authors.workspace = true
 
 [dependencies]
-pantheon-log = { path = "../modules/pantheon-log/" }
-pantheon-types = { path = "../modules/pantheon-types/" }
+hermes-log = { path = "../modules/hermes-log/" }
 pantheon-core = { path = "../modules/pantheon-core/" }
-pantheon-io = { path = "../modules/pantheon-io/" }
+argus-io = { path = "../modules/argus-io/" }
 winit = "0.30.12"

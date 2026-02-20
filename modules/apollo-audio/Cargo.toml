@@ -1,5 +1,5 @@
 [package]
-name = "pantheon-types"
+name = "apollo-audio"
 edition = "2024"
 version.workspace = true
 authors.workspace = true

@@ -68,6 +68,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "apollo-audio"
+version = "0.1.0"
+
+[[package]]
+name = "argus-io"
+version = "0.1.0"
+dependencies = [
+ "hermes-log",
+ "pantheon-core",
+ "winit",
+]
+
+[[package]]
 name = "arrayref"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -403,6 +416,13 @@ name = "hashbrown"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
+
+[[package]]
+name = "hermes-log"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+]
 
 [[package]]
 name = "hermit-abi"
@@ -839,40 +859,14 @@ dependencies = [
 name = "pantheon"
 version = "0.1.0"
 dependencies = [
+ "argus-io",
+ "hermes-log",
  "pantheon-core",
- "pantheon-io",
- "pantheon-log",
- "pantheon-types",
  "winit",
 ]
 
 [[package]]
 name = "pantheon-core"
-version = "0.1.0"
-dependencies = [
- "pantheon-log",
- "winit",
-]
-
-[[package]]
-name = "pantheon-io"
-version = "0.1.0"
-dependencies = [
- "pantheon-core",
- "pantheon-log",
- "pantheon-types",
- "winit",
-]
-
-[[package]]
-name = "pantheon-log"
-version = "0.1.0"
-dependencies = [
- "chrono",
-]
-
-[[package]]
-name = "pantheon-types"
 version = "0.1.0"
 
 [[package]]
@@ -1841,3 +1835,7 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "zeus-world"
+version = "0.1.0"

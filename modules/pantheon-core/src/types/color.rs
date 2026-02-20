@@ -1,9 +1,9 @@
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Color {
-    r: f32,
-    g: f32,
-    b: f32,
-    a: f32
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub a: f32
 }
 
 impl std::fmt::Display for Color {
@@ -12,9 +12,23 @@ impl std::fmt::Display for Color {
     }
 }
 
+impl Default for Color {
+    fn default() -> Self {
+        Self::new(0.0, 0.0, 0.0, 1.0)
+    }
+}
+
 impl Color {
     pub const fn new(r:f32, g:f32, b:f32, a:f32) -> Self {
         Color {r, g, b, a}
+    }
+
+    pub fn approx_eq(self, other: Self) -> bool {
+        const EPS: f32 = 1e-6;
+        (self.r - other.r).abs() < EPS &&
+        (self.g - other.g).abs() < EPS &&
+        (self.b - other.b).abs() < EPS &&
+        (self.a - other.a).abs() < EPS
     }
 }
 
