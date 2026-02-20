@@ -1,8 +1,9 @@
+pub mod engine;
 use std::thread::{self, JoinHandle};
-use argus_io::{AppIO, IOError, IOEvent};
-use pantheon_core::{AppConfig, PantheonEvent};
+use argus_io::{AppIO, IOError};
+use engine::Engine;
+use pantheon_core::AppConfig;
 use hermes_log::{info, trace, warn};
-use winit::keyboard::KeyCode;
 
 #[derive(Debug)]
 pub enum PantheonError {
@@ -11,7 +12,7 @@ pub enum PantheonError {
     EngineThreadPaniced
 }
 
-pub struct Pantheon {
+pub struct AppRunner {
     app_config: AppConfig,
     app_io: AppIO,
     engine_thread: Option<JoinHandle<()>>,
@@ -32,7 +33,7 @@ pub trait Application {
     }
 }
 
-impl Pantheon {
+impl AppRunner {
     pub fn new(app: Box<dyn Application + Send>) -> Self {
         info!("Pantheon Version: {}", pantheon_core::VERSION);
 
@@ -45,26 +46,7 @@ impl Pantheon {
         trace!("Spawning engine thread...");
         let app_config = app.app_config();
         let join_handle = thread::spawn(move || {
-            loop {
-                let io_event = rx_io.recv().unwrap();
-                match io_event {
-                    IOEvent::IOStarted => {
-                        trace!("Window was created, and the engine thread has started");
-                        app.on_start();
-                    },
-                    IOEvent::CloseRequested => {
-                        let _ = tx_pe.send(PantheonEvent::Shutdown);
-                        break;
-                    },
-                    IOEvent::KeyPressed(key) => {
-                        if key == KeyCode::KeyW {
-                            let _ = tx_pe.send(PantheonEvent::Shutdown);
-                            break;
-                        }
-                    }
-                    _ => ()
-                }
-            }
+            Engine::new(app, rx_io, tx_pe).run();
         });
 
         Self { app_config, app_io: appio, engine_thread: Some(join_handle) }

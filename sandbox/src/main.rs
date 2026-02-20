@@ -1,4 +1,4 @@
-use pantheon::{Application, Pantheon, PantheonError};
+use pantheon::{Application, AppRunner, PantheonError};
 use pantheon_core::AppConfig;
 
 struct Sandbox {}
@@ -18,5 +18,5 @@ impl Application for Sandbox {
 }
 
 pub fn main () -> Result<(), PantheonError> {
-    Pantheon::new(Box::new(Sandbox::new())).run()
+    AppRunner::new(Box::new(Sandbox::new())).run()
 }
