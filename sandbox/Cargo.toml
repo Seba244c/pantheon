@@ -1,0 +1,9 @@
+[package]
+name = "sandbox"
+edition = "2024"
+version.workspace = true
+authors.workspace = true
+
+[dependencies]
+pantheon = { path = "../pantheon/" }
+pantheon-core = { path = "../modules/pantheon-core/" }
